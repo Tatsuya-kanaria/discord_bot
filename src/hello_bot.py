@@ -1,8 +1,9 @@
 # This example requires the 'message_content' intent.
+import config
 
 import discord
 
-TOKEN = 'MTA5NjAzMzQxNjgzMjYyNjgwOQ.G3ICWn.cbWle5bqM69RTZDBTtA0rqGvs42cWyC7Xi47O4'
+TOKEN = config.MY_TOKEN
 
 Intents = discord.Intents.default()
 Intents.message_content = True
