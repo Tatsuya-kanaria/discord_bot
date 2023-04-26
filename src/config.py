@@ -3,4 +3,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-MY_TOKEN = os.getenv('MY_TOKEN')
+DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+BOT_CHANNEL_ID = os.getenv('BOT_CHANNEL_ID')

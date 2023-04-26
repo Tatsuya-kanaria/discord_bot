@@ -2,13 +2,39 @@
 import config
 
 import discord
+import openai
 
-TOKEN = config.MY_TOKEN
+TOKEN = config.DISCORD_TOKEN
+KEY = config.OPENAI_API_KEY
+BOT_CHANNEL = int(config.BOT_CHANNEL_ID)
 
+# discordの初期設定
 Intents = discord.Intents.default()
 Intents.message_content = True
-
 client = discord.Client(intents=Intents)
+
+# openAIの初期設定
+openai.api_key = KEY
+model_engine = "text-davinci-003"
+
+# loginのための初期設定
+message_list = ['please tell me. you can input some talk with me.', 'empty']
+_counter = 0
+
+
+def openai_response(prompt):
+    completion = openai.Completion.create(
+        engine=model_engine,
+        prompt=prompt,
+        max_tokens=1024,
+        n=1,
+        stop=None,
+        temperature=0.5
+    )
+
+    response = completion.choices[0].text
+
+    return response
 
 
 def get_data(message):
@@ -51,14 +77,34 @@ async def on_message(message):
             await message.channel.send('何も残さないよ！')
         else:
             await message.channel.send('そのコマンドは使えないよ。')
+    if message.channel.id == BOT_CHANNEL:
+        global _counter
+        if _counter > 0:
+            _counter = 0
+        else:
+            _counter += 1
+        index = (_counter - 1) * -1
 
-    print(get_data(message))
+        print(message.content)
+        print("_counter : " + str(_counter))
+        print(message_list)
+        print('--------------------')
+        message_list[_counter] = message.content
+        print(message_list)
+        print('access index : ' + str(index))
 
-BOT_CHANNEL_ID = 1096032179928178818
+        # /tellme と入力すると、chatGPT に質問を投げます
+        if message.content == '/tellme':
+            _prompt = message_list[index]
+            print('prompt : ' + _prompt)
+            response = openai_response(_prompt)
+            await message.channel.send(response)
+
+    # print(get_data(message))
 
 
 async def greet():
-    channel = client.get_channel(BOT_CHANNEL_ID)
+    channel = client.get_channel(BOT_CHANNEL)
     await channel.send('おはようございます。')
 
 
